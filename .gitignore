@@ -2,6 +2,7 @@
 .idea/
 src/fil1.ico
 src/fil2.ico
+src/config.ini
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

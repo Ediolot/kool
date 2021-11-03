@@ -1,9 +1,9 @@
 import threading
 import time
-from configparser import ConfigParser
 
 import win32gui
 
+from config.config_manager import ConfigManager
 from create_icons import get_cpu_mem_icon, get_net_disk_icon
 from stats import DeviceStats
 from tooltip import Tooltip, Message
@@ -13,8 +13,7 @@ lock = threading.RLock()  # Lock for updating ico image and messages
 
 def update_status_loop(tp1, tp2):
     """ Update icon images and messages """
-    config = ConfigParser()
-    config.read('./config.ini')
+    config = ConfigManager('./config.ini')
     stats = DeviceStats()
     while True:
         stats.update_stats()
