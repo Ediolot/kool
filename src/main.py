@@ -1,8 +1,6 @@
 import threading
 import time
 from configparser import ConfigParser
-from tempfile import mkstemp
-import os
 
 import win32gui
 
@@ -41,19 +39,13 @@ def update_window_loop(tp1, tp2):
 
 
 def main():
-    fd, icon_file1 = mkstemp(suffix='.ico')
-    os.close(fd)
-    fd, icon_file2 = mkstemp(suffix='.ico')
-    os.close(fd)
-    tp1 = Tooltip('CPU/MEM Meter', temp_file=icon_file1)
-    tp2 = Tooltip('NET/DISK Meter', temp_file=icon_file2)
+    tp1 = Tooltip('CPU/MEM Meter')
+    tp2 = Tooltip('NET/DISK Meter')
     status_loop = threading.Thread(target=update_status_loop, args=(tp1, tp2), daemon=True)
     status_loop.start()
     update_window_loop(tp1, tp2)
     tp1.cleanup()
     tp2.cleanup()
-    os.remove(icon_file1)
-    os.remove(icon_file2)
 
 
 if __name__ == '__main__':

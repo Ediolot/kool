@@ -1,4 +1,6 @@
+import os
 from enum import Enum
+from tempfile import mkstemp
 
 import win32api
 import win32con
@@ -12,12 +14,13 @@ class Message(Enum):
 
 
 class Tooltip:
-    def __init__(self, name='', temp_file=None):
+    def __init__(self, name=''):
         win32gui.InitCommonControls()
         self.should_exit = False
         self.name = name
         self.icon_set = False
-        self.icon = temp_file  # tempfile.NamedTemporaryFile(suffix='.ico')
+        fd, self.icon = mkstemp(suffix='.ico')
+        os.close(fd)  # Close the file descriptor, we just need an unique path
         self.style = win32con.WS_OVERLAPPEDWINDOW | win32con.WS_SYSMENU
         self.instance_handle = win32api.GetModuleHandle(None)  # Handle instance to the current executable
         self.window_class = self._create_window_class(self._build_function_map(), register=True)
@@ -27,6 +30,7 @@ class Tooltip:
         nid = (self.window_handle, 0)
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, nid)
         win32gui.PostQuitMessage(0)
+        os.remove(self.icon)
 
     def _create_window_class(self, message_map, register=False):
         wc = win32gui.WNDCLASS()
