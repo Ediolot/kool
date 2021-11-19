@@ -1,3 +1,5 @@
+""" Disk usage bar tests """
+
 import os
 from enum import Enum
 from tempfile import mkstemp
