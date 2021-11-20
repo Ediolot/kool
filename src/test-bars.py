@@ -3,44 +3,7 @@
 import psutil
 from math import log2
 from typing import Any, Dict
-
-class DeviceStats:
-    def __init__(self, update_time_s=3):
-        self.last_disk = None
-        self.last_net = None
-        self.update_time_s = update_time_s
-        # Finally set the initial stats
-        self.stats: Dict[str, Any] = {}
-
-    def update_stats(self):
-        cpu = psutil.cpu_percent(interval=self.update_time_s, percpu=True)
-        disk = psutil.disk_io_counters()
-        net = psutil.net_io_counters()
-        net_sent_bytes = net.bytes_sent - self.last_net.bytes_sent if self.last_net else 0
-        net_recv_bytes = net.bytes_recv - self.last_net.bytes_recv if self.last_net else 0
-        disk_read_bytes = disk.read_bytes - self.last_disk.read_bytes if self.last_disk else 0
-        disk_write_bytes = disk.write_bytes - self.last_disk.write_bytes if self.last_disk else 0
-        self.stats = {
-            'memory': psutil.virtual_memory()[2],
-            'cpu': {
-                'all': cpu,
-                'avg': sum(cpu) / len(cpu)
-            },
-            'disk': {  # MB/s
-                'read': (disk_read_bytes / (1024.0 ** 2)) / self.update_time_s,
-                'write': (disk_write_bytes / (1024.0 ** 2)) / self.update_time_s,
-            },
-            'network': {  # MB/s
-                'sent': (net_sent_bytes / (1024.0 ** 2)) / self.update_time_s,
-                'recv': (net_recv_bytes / (1024.0 ** 2)) / self.update_time_s,
-            }
-        }
-        self.last_net = net
-        self.last_disk = disk
-
-    def __getitem__(self, item):
-        return self.stats[item]
-
+from stats import DeviceStats
 
 
 def DiskUsage(stats):
@@ -87,5 +50,19 @@ def NetworkUsage(stats, win_size=10, min_sent=0.1, min_recv=0.1):
         print(f"{hs:2d} {hr:2d} {max_sent:7.2f} {max_recv:7.2f} {ns:7.2f} {nr:7.2f} ", end='')
         print('*' * hs + '.' * (16 - hs) + ' ' + '*' * hr + '.' * (16 - hr))
 
-DiskUsage(DeviceStats())
+# DiskUsage(DeviceStats())
 # NetworkUsage(DeviceStats(), 10)
+
+stats = DeviceStats()
+while True:
+    stats.update_stats()
+    ns = stats['network']['sent']
+    nr = stats['network']['recv']
+    hs = stats['network']['scaled_sent']
+    hr = stats['network']['scaled_recv']
+    # print(f"{hs:2d} {hr:2d} {ns:7.2f} {nr:7.2f} ")
+    print('*' * hs + '.' * (16 - hs) + ' ' + '*' * hr + '.' * (16 - hr), end='')
+    hs = stats['disk']['scaled_read']
+    hr = stats['disk']['scaled_write']
+    # print(f"{hs:2d} {hr:2d} {ns:7.2f} {nr:7.2f} ")
+    print('   ' + '*' * hs + '.' * (16 - hs) + ' ' + '*' * hr + '.' * (16 - hr))
