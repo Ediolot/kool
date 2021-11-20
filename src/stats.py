@@ -1,7 +1,6 @@
 from threading import RLock
 from typing import Any, Dict
 
-import numpy as np
 import psutil
 
 
@@ -26,7 +25,7 @@ class DeviceStats:
             'memory': psutil.virtual_memory()[2],
             'cpu': {
                 'all': cpu,
-                'avg': np.average(cpu),
+                'avg': sum(cpu) / len(cpu),
             },
             'disk': {  # MB/s
                 'read': (disk_read_bytes / (1024.0 ** 2)) / self.update_time_s,
