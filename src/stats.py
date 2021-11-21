@@ -80,16 +80,16 @@ class DeviceStats:
                 'avg': sum(cpu) / len(cpu),
             },
             'disk': {  # MB/s
-                'read': dr,
-                'write': dw,
-                'scaled_read': int(dr * 16 / self.max_read),
-                'scaled_write': int(dw * 16 / self.max_write),
+                # 'raw_read': dr,
+                # 'raw_write': dw,
+                'read': dr * 100 / self.max_read,
+                'write': dw * 100 / self.max_write,
             },
             'network': {  # MB/s
-                'sent': ns,
-                'recv': nr,
-                'scaled_sent': int(ns * 16 / self.max_sent),
-                'scaled_recv': int(nr * 16 / self.max_recv)
+                # 'raw_sent': ns,
+                # 'raw_recv': nr,
+                'sent': ns * 100 / self.max_sent,
+                'recv': nr * 100 / self.max_recv
             }
         }
         self.last_net = net

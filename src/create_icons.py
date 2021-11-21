@@ -6,18 +6,19 @@ def get_cpu_mem_icon(stats, config):
     mem_color = config.get_color_pair('memory')
     cpu_color = config.get_color_pair('cpu')
 
-    mem_usage = max((stats['memory'] / 100) * 16, 1)  # Set memory usage as a value in [1, 16]
-    cpu_usage = [max((usage / 100) * 14, 1) for usage in stats['cpu']['all']]  # Set cpu usage as a value in [1, 14]
+    mem_usage = int(stats['memory'] * 16 / 100 + 0.9)  # Round to next int
+    cpu_usage = [int(usage * 14 / 100 + 0.9) for usage in stats['cpu']['all']]  # Set cpu usage as a value in [1, 14]
     cpu_bar_width = 16 // len(cpu_usage)
 
     image = Image.new('RGBA', (16, 16))
     dc = ImageDraw.Draw(image)
-    dc.rectangle([0, 0, mem_usage, 2 - 1], mem_color[0])
-    dc.rectangle([mem_usage, 0, 16, 2 - 1], mem_color[1])
+    dc.rectangle((mem_usage, 0, 16, 2 - 1), mem_color[1])
+    dc.rectangle((0, 0, max(mem_usage, 1), 2 - 1), mem_color[0])
     for i, usage in enumerate(cpu_usage):
         x = i * cpu_bar_width
-        dc.rectangle([x, 16, x + cpu_bar_width - 1, 16 - usage], cpu_color[0])
-        dc.rectangle([x, 16 - usage,  + cpu_bar_width - 1, 16 - 14], cpu_color[1])
+        dc.rectangle((x, 16 - usage,  + cpu_bar_width - 1, 16 - 14), fill=cpu_color[1])
+        # rectangle at least draw one pixel
+        dc.rectangle((x, 16, x + cpu_bar_width - 1, min(16 - usage, 15)), fill=cpu_color[0])
     txt = f'CPU {stats["cpu"]["avg"]:.2f}%\n' \
           f'MEM {stats["memory"]:.2f}%'
     return image, txt
@@ -26,10 +27,10 @@ def get_cpu_mem_icon(stats, config):
 def get_net_disk_icon(stats, config):
     draw_seps = config.get_bool('misc/draw_separators')
     # Get stats in range [1, 16]
-    network_sent = stats['network']['scaled_sent']
-    network_recv = stats['network']['scaled_recv']
-    disk_read = stats['disk']['scaled_read']
-    disk_write = stats['disk']['scaled_write']
+    network_sent = int(stats['network']['sent'] * 16 / 100 + 0.9)   # Round to next int
+    network_recv = int(stats['network']['recv'] * 16 / 100 + 0.9)
+    disk_read = int(stats['disk']['read'] * 16 / 100 + 0.9)
+    disk_write = int(stats['disk']['write'] * 16 / 100 + 0.9)
 
     network_sent_color = config.get_color_pair('network_sent')
     network_recv_color = config.get_color_pair('network_recv')
@@ -51,8 +52,9 @@ def get_net_disk_icon(stats, config):
     for k in range(4):
         name, (size, color) = io_order[k]
         x = 4 * k
-        dc.rectangle([x, 16, x + 4 - 1, 16 - size], color[0])
-        dc.rectangle([x, 16 - size, x + 4 - 1, 0], color[1])
+        dc.rectangle((x, 16 - size, x + 4 - 1, 0), fill=color[1])
+        # rectangle at least draw one pixel
+        dc.rectangle((x, 16, x + 4 - 1, min(16 - size, 15)), fill=color[0])
         # dc.rectangle([x, 16, x + 4, 0], outline='white')
 
         # TODO

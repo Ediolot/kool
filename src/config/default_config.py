@@ -36,8 +36,8 @@ kDefaultConfig = {
         # Order in which information is displayed for the second tooltip and message
         'network_sent': 0,
         'network_recv': 1,
-        'disk_read': 2,
-        'disk_write': 3,
+        'disk_write': 2,
+        'disk_read': 3,
     },
     'misc': {
         'draw_separators': True,
