@@ -4,7 +4,7 @@ import psutil
 
 class DeviceStats:
     def __init__(self, update_time_s=3,
-                       net_winsize=10, min_sent=0.1, min_recv=0.1, net_common=0,
+                       net_winsize=20, min_sent=0.1, min_recv=0.1, net_common=0,
                        disk_winsize=2, min_read=0.5, min_write=0.5, disk_common=1):
         self.last_disk = None
         self.last_net = None

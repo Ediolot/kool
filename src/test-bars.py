@@ -61,8 +61,8 @@ while True:
     hs = stats['network']['scaled_sent']
     hr = stats['network']['scaled_recv']
     # print(f"{hs:2d} {hr:2d} {ns:7.2f} {nr:7.2f} ")
-    print('*' * hs + '.' * (16 - hs) + ' ' + '*' * hr + '.' * (16 - hr), end='')
+    print('ns:' + '*' * hs + '.' * (16 - hs) + ' nr:' + '*' * hr + '.' * (16 - hr), end='')
     hs = stats['disk']['scaled_read']
     hr = stats['disk']['scaled_write']
     # print(f"{hs:2d} {hr:2d} {ns:7.2f} {nr:7.2f} ")
-    print('   ' + '*' * hs + '.' * (16 - hs) + ' ' + '*' * hr + '.' * (16 - hr))
+    print('   dr:' + '*' * hs + '.' * (16 - hs) + ' dw:' + '*' * hr + '.' * (16 - hr))

@@ -2,17 +2,24 @@
 kDefaultConfig = {
     'colors': {
         # Hex rgba format
-        'cpu': 'ff5151ff',
-        'memory': 'ff9b6aff',
-        'network_sent': '6699ccff',
-        'network_recv': 'fff275ff',
-        'disk_read': 'ff8c42ff',
-        'disk_write': 'ff3c38ff',
+        # 'cpu': 'ff5151ff',
+        # 'memory': 'ff9b6aff',
+        'cpu': '0080ffff',
+        'memory': '00ffffff',
+        # 'network_sent': '6699ccff',
+        # 'network_recv': 'fff275ff',
+        'network_sent': 'fff275ff',
+        'network_recv': '6699ccff',
+        # 'disk_read': 'ff8c42ff',
+        # 'disk_write': 'ff3c38ff',
+        'disk_read': '00ff00ff',
+        'disk_write': 'ff0000ff',
     },
     'background_colors': {
         # Hex rgba format
         'cpu': 'ffffff00',
-        'memory': 'ffffff00',
+        # 'memory': 'ffffff00',
+        'memory': '003333ff',
         'network_sent': 'ffffff00',
         'network_recv': 'ffffff00',
         'disk_read': 'ffffff00',
