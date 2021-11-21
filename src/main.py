@@ -104,5 +104,4 @@ def main():
     icon_nd.run()   # Seem it needs an icon.run() in main
 
 if __name__ == '__main__':
-
     main()
