@@ -5,7 +5,7 @@ import psutil
 class DeviceStats:
     def __init__(self, update_time_s=3,
                        net_winsize=20, min_sent=0.1, min_recv=0.1, net_common=0,
-                       disk_winsize=2, min_read=0.5, min_write=0.5, disk_common=1):
+                       disk_winsize=2, min_write=0.5, min_read=0.5, disk_common=1):
         self.last_disk = None
         self.last_net = None
         self.update_time_s = update_time_s
@@ -22,14 +22,14 @@ class DeviceStats:
         self.net_common = net_common
         # disk attributes
         self.disk_winsize = disk_winsize
-        self.min_read = min_read
         self.min_write = min_write
+        self.min_read = min_read
         if disk_winsize == 0:
             # if winsize is 0, max value is absolute
-            self.max_read = min_read
             self.max_write = min_write
-        self.read_win = [0] * disk_winsize
+            self.max_read = min_read
         self.write_win = [0] * disk_winsize
+        self.read_win = [0] * disk_winsize
         self.disk_common = disk_common
         # Finally set the initial stats
         self.stats: Dict[str, Any] = {}
@@ -40,14 +40,14 @@ class DeviceStats:
         net = psutil.net_io_counters()
         net_sent_bytes = net.bytes_sent - self.last_net.bytes_sent if self.last_net else 0
         net_recv_bytes = net.bytes_recv - self.last_net.bytes_recv if self.last_net else 0
-        disk_read_bytes = disk.read_bytes - self.last_disk.read_bytes if self.last_disk else 0
         disk_write_bytes = disk.write_bytes - self.last_disk.write_bytes if self.last_disk else 0
-        # In megabytes
-        ns = net_sent_bytes / (1024.0 ** 2) / self.update_time_s
-        nr = net_recv_bytes / (1024.0 ** 2) / self.update_time_s
-        dr = disk_read_bytes / (1024.0 ** 2) / self.update_time_s
-        dw = disk_write_bytes / (1024.0 ** 2) / self.update_time_s
-        # Scaled network stats
+        disk_read_bytes = disk.read_bytes - self.last_disk.read_bytes if self.last_disk else 0
+        # In Megabytes
+        ns = net_sent_bytes / 1048576 / self.update_time_s  # 1048576 = 1024^2
+        nr = net_recv_bytes / 1048576 / self.update_time_s
+        dw = disk_write_bytes / 1048576 / self.update_time_s
+        dr = disk_read_bytes / 1048576 / self.update_time_s
+        # Max values for normalized network stats
         if self.net_winsize == 0:
             self.max_sent = max(self.max_sent, ns)
             self.max_recv = max(self.max_recv, nr)
@@ -59,7 +59,7 @@ class DeviceStats:
         if self.net_common:
             self.max_sent = max(self.max_sent, self.max_recv)
             self.max_recv = self.max_sent
-        # Scaled disk stats
+        # Max values for normalized disk stats
         if self.disk_winsize == 0:
             self.max_read = max(self.max_read, dr)
             self.max_write = max(self.max_write, dw)
@@ -71,25 +71,29 @@ class DeviceStats:
         if self.disk_common:
             self.max_read = max(self.max_read, self.max_write)
             self.max_write = self.max_read
-        # print(f'> {self.max_sent:5.2f} ' + ''.join(f'{x:5.2f} ' for x in self.sent_win))
         # print(f'  {self.max_recv:5.2f} ' + ''.join(f'{x:5.2f} ' for x in self.recv_win), end='')
+        # print(f'> {self.max_sent:5.2f} ' + ''.join(f'{x:5.2f} ' for x in self.sent_win))
         self.stats = {
             'memory': psutil.virtual_memory()[2],
             'cpu': {
                 'all': cpu,
                 'avg': sum(cpu) / len(cpu),
             },
-            'disk': {  # MB/s
-                # 'raw_read': dr,
-                # 'raw_write': dw,
-                'read': dr * 100 / self.max_read,
-                'write': dw * 100 / self.max_write,
-            },
-            'network': {  # MB/s
-                # 'raw_sent': ns,
-                # 'raw_recv': nr,
+            'network': {
+                # MB/s
+                'raw_sent': ns,
+                'raw_recv': nr,
+                # %
                 'sent': ns * 100 / self.max_sent,
                 'recv': nr * 100 / self.max_recv
+            },
+            'disk': {
+                # MB/s
+                'raw_write': dw,
+                'raw_read': dr,
+                # %
+                'write': dw * 100 / self.max_write,
+                'read': dr * 100 / self.max_read,
             }
         }
         self.last_net = net

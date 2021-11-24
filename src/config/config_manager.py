@@ -4,7 +4,7 @@ from typing import Union, Tuple
 from PIL import ImageColor
 from configobj import ConfigObj
 
-from src.config.default_config import kDefaultConfig
+from config.default_config import kDefaultConfig
 
 
 class ConfigOptionError(Exception):

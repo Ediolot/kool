@@ -42,10 +42,12 @@ def main():
     t_nd = threading.Thread(target=lambda: icon_nd.run(), name='net_disk_icon', daemon=True)
     t_status = threading.Thread(target=update_status_loop, args=(icon_cm, icon_nd,), name='kool_updater', daemon=True)
     t_status.start()
-    t_cm.start()
+    # Start 1st network/disk so its icon is on the right of the cpu/mem one
+    # ... not always work
     t_nd.start()
-    t_cm.join()
+    t_cm.start()
     t_nd.join()
+    t_cm.join()
 
 
 if __name__ == '__main__':

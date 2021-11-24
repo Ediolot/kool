@@ -3,6 +3,10 @@
 src/fil1.ico
 src/fil2.ico
 src/config.ini
+# pyinstaller directories and files (convert to exe)
+dist/
+build/
+*.spec
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

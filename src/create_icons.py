@@ -32,7 +32,7 @@ def get_cpu_mem_icon(stats, config, memory_width=2):
             dc.rectangle((x, 16, x + cpu_bar_width - 1, 16 - cpu_bar_height), fill=cpu_color[1])
             dc.rectangle((x, 16 - usage, x + cpu_bar_width - 1, 16), fill=cpu_color[0])
 
-    return image, f'CPU {stats["cpu"]["avg"]:.2f}%\nMEM {stats["memory"]:.2f}%'
+    return image, f'CPU: {stats["cpu"]["avg"]:.2f}%\nMEM: {stats["memory"]:.2f}%'
 
 
 def get_net_disk_icon(stats, config, lines_width=4):
@@ -45,19 +45,20 @@ def get_net_disk_icon(stats, config, lines_width=4):
 
     network_sent_color = config.get_color_pair('network_sent')
     network_recv_color = config.get_color_pair('network_recv')
-    disk_read_color = config.get_color_pair('disk_read')
     disk_write_color = config.get_color_pair('disk_write')
+    disk_read_color = config.get_color_pair('disk_read')
 
     io_order = {
         config.get_int('io_order/network_sent'): ('network_sent', (network_sent, network_sent_color)),
         config.get_int('io_order/network_recv'): ('network_recv', (network_recv, network_recv_color)),
-        config.get_int('io_order/disk_read'): ('disk_read', (disk_read, disk_read_color)),
         config.get_int('io_order/disk_write'): ('disk_write', (disk_write, disk_write_color)),
+        config.get_int('io_order/disk_read'): ('disk_read', (disk_read, disk_read_color)),
     }
 
     txt = ''
     network_done = False
     disk_done = False
+    state = 00
     image = Image.new('RGBA', (16, 16))
     dc = ImageDraw.Draw(image)
     for k in range(4):
@@ -85,14 +86,13 @@ def get_net_disk_icon(stats, config, lines_width=4):
                 txt += '  MB/s\n'
             txt += 'D:'
         if name == 'network_sent':
-            txt += f' ↑ {stats["network"]["sent"]:3.0f}'
+            txt += f' ↑ {stats["network"]["raw_sent"]:3.0f}'
         if name == 'network_recv':
-            txt += f' ↓ {stats["network"]["recv"]:3.0f}'
-        if name == 'disk_read':
-            txt += f' ↑ {stats["disk"]["read"]:3.0f}'
+            txt += f' ↓ {stats["network"]["raw_recv"]:3.0f}'
         if name == 'disk_write':
-            txt += f' ↓ {stats["disk"]["write"]:3.0f}'
+            txt += f' ↑ {stats["disk"]["raw_write"]:3.0f}'
+        if name == 'disk_read':
+            txt += f' ↓ {stats["disk"]["raw_read"]:3.0f}'
     txt += '  MB/s'
 
-    image.save('test.png')
     return image, txt
