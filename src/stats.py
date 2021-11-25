@@ -80,7 +80,7 @@ class DeviceStats:
                 'avg': sum(cpu) / len(cpu),
             },
             'network': {
-                # MB/s
+                # B/s
                 'raw_sent': ns,
                 'raw_recv': nr,
                 # %
@@ -88,7 +88,7 @@ class DeviceStats:
                 'recv': nr * 100 / self.max_recv
             },
             'disk': {
-                # MB/s
+                # B/s
                 'raw_write': dw,
                 'raw_read': dr,
                 # %
