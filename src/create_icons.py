@@ -49,22 +49,21 @@ def get_net_disk_icon(stats, config, lines_width=4):
     disk_read_color = config.get_color_pair('disk_read')
 
     io_order = {
-        config.get_int('io_order/network_sent'): ('network_sent', (network_sent, network_sent_color)),
-        config.get_int('io_order/network_recv'): ('network_recv', (network_recv, network_recv_color)),
-        config.get_int('io_order/disk_write'): ('disk_write', (disk_write, disk_write_color)),
-        config.get_int('io_order/disk_read'): ('disk_read', (disk_read, disk_read_color)),
+        config.get_int('io_order/network_sent'): ('network_sent', stats['network']['raw_sent'], (network_sent, network_sent_color)),
+        config.get_int('io_order/network_recv'): ('network_recv', stats['network']['raw_recv'], (network_recv, network_recv_color)),
+        config.get_int('io_order/disk_write'): ('disk_write', stats['disk']['raw_write'], (disk_write, disk_write_color)),
+        config.get_int('io_order/disk_read'): ('disk_read', stats['disk']['raw_read'], (disk_read, disk_read_color)),
     }
 
     txt = ''
     network_done = False
     disk_done = False
-    state = 00
     image = Image.new('RGBA', (16, 16))
     dc = ImageDraw.Draw(image)
     for k in range(4):
-        name, (size, color) = io_order[k]
-        x = lines_width * k
+        name, value, (size, color) = io_order[k]
 
+        x = lines_width * k
         if draw_seps:
             dc.rectangle((x, 0, x + lines_width - 1, 16), fill=half_opacity(color[1]))
             dc.rectangle((x, 0, x + lines_width - 2, 16), fill=color[1])
@@ -75,24 +74,31 @@ def get_net_disk_icon(stats, config, lines_width=4):
             dc.rectangle((x, 16 - size, x + lines_width - 1, 16), fill=color[0])
 
         # TODO
+        units = 'MB/s'
+        if value < 1:
+            value = value * 1024
+            units = 'KB/s'
+
+        direction = 'ERROR'     # Default value, just in case
+        if name == 'network_sent':
+            direction = '↑'
+        elif name == 'network_recv':
+            direction = '↓'
+        elif name == 'disk_write':
+            direction = '↑'
+        elif name == 'disk_read':
+            direction = '↓'
+
         if 'network' in name and not network_done:
             network_done = True
             if disk_done:
-                txt += '  MB/s\n'
+                txt += '\n'
             txt += 'N:'
         if 'disk' in name and not disk_done:
             disk_done = True
             if network_done:
-                txt += '  MB/s\n'
+                txt += '\n'
             txt += 'D:'
-        if name == 'network_sent':
-            txt += f' ↑ {stats["network"]["raw_sent"]:3.0f}'
-        if name == 'network_recv':
-            txt += f' ↓ {stats["network"]["raw_recv"]:3.0f}'
-        if name == 'disk_write':
-            txt += f' ↑ {stats["disk"]["raw_write"]:3.0f}'
-        if name == 'disk_read':
-            txt += f' ↓ {stats["disk"]["raw_read"]:3.0f}'
-    txt += '  MB/s'
+        txt += f' {direction} {value:1.0f} {units}'
 
     return image, txt
