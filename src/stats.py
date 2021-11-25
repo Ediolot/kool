@@ -42,11 +42,11 @@ class DeviceStats:
         net_recv_bytes = net.bytes_recv - self.last_net.bytes_recv if self.last_net else 0
         disk_write_bytes = disk.write_bytes - self.last_disk.write_bytes if self.last_disk else 0
         disk_read_bytes = disk.read_bytes - self.last_disk.read_bytes if self.last_disk else 0
-        # In Megabytes
-        ns = net_sent_bytes / 1048576 / self.update_time_s  # 1048576 = 1024^2
-        nr = net_recv_bytes / 1048576 / self.update_time_s
-        dw = disk_write_bytes / 1048576 / self.update_time_s
-        dr = disk_read_bytes / 1048576 / self.update_time_s
+        # In B/s
+        ns = net_sent_bytes / self.update_time_s
+        nr = net_recv_bytes / self.update_time_s
+        dw = disk_write_bytes / self.update_time_s
+        dr = disk_read_bytes / self.update_time_s
         # Max values for normalized network stats
         if self.net_winsize == 0:
             self.max_sent = max(self.max_sent, ns)
