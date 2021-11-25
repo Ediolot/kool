@@ -83,13 +83,9 @@ def get_net_disk_icon(stats, config, lines_width=4):
             units = 'M'
 
         direction = 'ERROR'     # Default value, just in case
-        if name == 'network_sent':
+        if name == 'network_sent' or name == 'disk_write':
             direction = '⯅' # ↑
-        elif name == 'network_recv':
-            direction = '⯆' # ↓
-        elif name == 'disk_write':
-            direction = '⯅' # ↑
-        elif name == 'disk_read':
+        elif name == 'network_recv' or name == 'disk_read':
             direction = '⯆' # ↓
 
         if 'network' in name and not network_done:
@@ -102,6 +98,7 @@ def get_net_disk_icon(stats, config, lines_width=4):
             if network_done:
                 txt += '\n'
             txt += 'D:'
+
         txt += f' {direction} {value:1.0f} {units}B/s'
 
     return image, txt
