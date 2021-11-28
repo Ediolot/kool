@@ -28,7 +28,7 @@ def exit_action(icm, ind):
 
 
 def open_task_manager():
-    os.system('cmd /c taskmgr')
+    os.system(r'start "" %WINDIR%\system32\taskmgr.exe')
 
 
 def click_action():

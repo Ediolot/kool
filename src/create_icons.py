@@ -32,7 +32,7 @@ def get_cpu_mem_icon(stats, config, memory_width=2):
             dc.rectangle((x, 16, x + cpu_bar_width - 1, 16 - cpu_bar_height), fill=cpu_color[1])
             dc.rectangle((x, 16 - usage, x + cpu_bar_width - 1, 16), fill=cpu_color[0])
 
-    return image, f'CPU: {stats["cpu"]["avg"]:.2f}%\nMEM: {stats["memory"]:.2f}%'
+    return image, f'MEM: {stats["memory"]:.2f}%\nCPU: {stats["cpu"]["avg"]:.2f}%'
 
 
 def get_net_disk_icon(stats, config, lines_width=4):
