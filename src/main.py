@@ -1,4 +1,4 @@
-import os
+import pyautogui
 import threading
 
 import pystray
@@ -28,7 +28,7 @@ def exit_action(icm, ind):
 
 
 def open_task_manager():
-    os.system(r'start "" %WINDIR%\system32\taskmgr.exe')
+    pyautogui.hotkey('ctrl', 'shift', 'esc')
 
 
 def click_action():
