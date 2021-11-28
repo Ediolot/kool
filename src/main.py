@@ -1,3 +1,4 @@
+import os
 import threading
 
 import pystray
@@ -5,6 +6,7 @@ from PIL import Image
 
 from config.config_manager import ConfigManager
 from create_icons import get_cpu_mem_icon, get_net_disk_icon
+from double_click_manager import DoubleClickManager
 from stats import DeviceStats
 
 
@@ -25,10 +27,21 @@ def exit_action(icm, ind):
     ind.stop()
 
 
+def open_task_manager():
+    os.system('cmd /c taskmgr')
+
+
+def click_action():
+    if DoubleClickManager.check_double_click():
+        open_task_manager()
+
+
 def create_icons():
     icon_cm = pystray.Icon('cpu_mem')
     icon_nd = pystray.Icon('net_disk')
     icon_cm.menu = icon_nd.menu = pystray.Menu(
+        pystray.MenuItem('Task manager - click', lambda: click_action(), default=True, visible=False),
+        pystray.MenuItem('Task manager', lambda: open_task_manager()),
         pystray.MenuItem('Exit', lambda: exit_action(icon_cm, icon_nd)),
     )
     icon_cm.icon = Image.new('RGBA', (16, 16), '#ffffff00')
